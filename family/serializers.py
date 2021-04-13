@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from .models import User, FamilyRelation
+from .models import User, FamilyRelation, RELATION_CHOICE
 
 
 class LoginAuthSerializer(serializers.ModelSerializer):
@@ -70,3 +70,47 @@ class FamilyRelativeDetailSerializer(serializers.ModelSerializer):
 
     def get_relation_name(self, obj):
         return obj.get_relation_display()
+
+
+class FamilyRelativeCreateSerializer(serializers.ModelSerializer):
+    relation = serializers.ChoiceField(allow_null=False, allow_blank=False,
+                                       choices=RELATION_CHOICE)
+
+    class Meta:
+        model = FamilyRelation
+        fields = ("relative", "relation",)
+
+    def validate(self, attrs):
+        user = self.context['request'].user
+        if not attrs.get('relative'):
+            raise ValidationError({"detail": "please enter relative"})
+        if FamilyRelation.objects.filter(relative=attrs.get('relative'),
+                                         added_by=user).exists():
+            raise ValidationError({"detail": "relative is already exists"})
+        if attrs.get('relative') == user:
+            raise ValidationError({"detail": "please enter valid relative"})
+        attrs['added_by'] = user
+        return attrs
+
+
+class FamilyRelativeUpdateSerializer(serializers.ModelSerializer):
+    relation = serializers.ChoiceField(allow_null=False,
+                                       allow_blank=False,
+                                       choices=RELATION_CHOICE)
+
+    class Meta:
+        model = FamilyRelation
+        fields = ("relative", "relation",)
+
+    def validate(self, attrs):
+        user = self.context['request'].user
+        if attrs.get('relative') is None:
+            raise ValidationError({"detail": "please enter relative"})
+        if attrs.get('relative'):
+            if attrs.get('relative') == user:
+                raise ValidationError({"detail": "please enter valid relative"})
+            if attrs.get('relative') != self.instance.relative:
+                if FamilyRelation.objects.filter(relative=attrs.get('relative'),
+                                                 added_by=user).exists():
+                    raise ValidationError({"detail": "relative is already exists"})
+        return attrs
