@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from .models import User
+from .models import User, FamilyRelation
 
 
 class LoginAuthSerializer(serializers.ModelSerializer):
@@ -44,5 +44,24 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ("name", "description", "email", "username",
-                  "address", "date_of_birth")
+        fields = ("id", "first_name", "last_name",
+                  "email", "username", "address",
+                  "date_of_birth", "phone_number",)
+
+
+class UserBasicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "first_name", "last_name")
+
+
+class FamilyRelativeDetailSerializer(serializers.ModelSerializer):
+    relative = UserBasicSerializer()
+    relation_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = FamilyRelation
+        fields = ("id", "relative", "relation", "relation_name",)
+
+    def get_relation_name(self, obj):
+        return obj.get_relative_display()

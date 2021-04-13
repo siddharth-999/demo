@@ -7,10 +7,12 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
-from .models import User
-from .permissions import UserPermission, LoginSignupPermission
+from .models import User,FamilyRelation
+from .permissions import UserPermission, LoginSignupPermission,\
+    FamilyRelativePermission
 from .serializers import UserUpdateSerializer, \
-    UserDetailSerializer, LoginAuthSerializer
+    UserDetailSerializer, LoginAuthSerializer, \
+    FamilyRelativeDetailSerializer
 
 
 class LoginAPIView(ObtainAuthToken, GenericAPIView):
@@ -69,3 +71,16 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+
+class FamilyRelativeViewSet(viewsets.ModelViewSet):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, FamilyRelativePermission,)
+    http_method_names = ["get", "patch"]
+
+    def get_queryset(self):
+        user = self.request.user
+        return FamilyRelation.objects.filter(added_by=user)
+
+    def get_serializer_class(self):
+        return FamilyRelativeDetailSerializer

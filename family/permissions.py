@@ -21,3 +21,13 @@ class LoginSignupPermission(BasePermission):
             return True
         else:
             return False
+
+
+class FamilyRelativePermission(BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_authenticated:
+            if view.action in ["list", "destroy", "partial_update"]:
+                return True
+            else:
+                return False
+        return False
