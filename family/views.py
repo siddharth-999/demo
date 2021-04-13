@@ -7,8 +7,8 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
-from .models import User,FamilyRelation
-from .permissions import UserPermission, LoginSignupPermission,\
+from .models import User, FamilyRelation
+from .permissions import UserPermission, LoginSignupPermission, \
     FamilyRelativePermission
 from .serializers import UserUpdateSerializer, \
     UserDetailSerializer, LoginAuthSerializer, \
@@ -36,8 +36,9 @@ class LoginAPIView(ObtainAuthToken, GenericAPIView):
             user = authenticate(username=user_check.email, password=password)
             if user and user.is_authenticated:
                 login(request, user)
-                token_obj = Token.objects.get_or_create(user=user)
-                return Response({"token": str(token_obj.key)},
+                token_obj, created = Token.objects.get_or_create(user=user)
+                return Response({"token": str(token_obj.key),
+                                 "user": user.id},
                                 status=status.HTTP_200_OK)
             return Response({"detail": "The password you entered does not "
                                        "match our records, please try again"},
@@ -76,7 +77,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class FamilyRelativeViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated, FamilyRelativePermission,)
-    http_method_names = ["get", "patch"]
+    http_method_names = ["get", "patch", "delete"]
 
     def get_queryset(self):
         user = self.request.user

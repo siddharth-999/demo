@@ -10,7 +10,7 @@ class UserAdmin(BaseUserAdmin):
         (None, {'fields': ('email', 'password', 'username')}),
         (_('Personal info'), {'fields': (
             'first_name', 'last_name', 'date_of_birth',
-            'address',)}),
+            'address', 'family')}),
         (_('Permissions'), {'fields': (
             'is_active', 'is_superuser', 'is_staff')}),
         (_('Important dates'),
@@ -22,7 +22,7 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('email', 'password1', 'password2'),
         }),
     )
-    list_display = ["id", "email", "is_active", ]
+    list_display = ["id", "email", "first_name", "last_name", ]
 
     list_filter = ('is_active',)
 

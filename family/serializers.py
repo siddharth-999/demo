@@ -27,8 +27,8 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("first_name", "last_name", "email",
-                  "address", "date_of_birth", "phone_number",)
+        fields = ("first_name", "last_name", "email", "date_of_birth",
+                  "address", "phone_number",)
 
     def validate(self, attrs):
         username = attrs.get("email")
@@ -42,11 +42,16 @@ class UserUpdateSerializer(serializers.ModelSerializer):
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
+    family = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ("id", "first_name", "last_name",
-                  "email", "username", "address",
-                  "date_of_birth", "phone_number",)
+        fields = ("id", "first_name", "last_name", "email",
+                  "address", "date_of_birth", "phone_number",
+                  "family",)
+
+    def get_family(self, obj):
+        return obj.family.name
 
 
 class UserBasicSerializer(serializers.ModelSerializer):
@@ -64,4 +69,4 @@ class FamilyRelativeDetailSerializer(serializers.ModelSerializer):
         fields = ("id", "relative", "relation", "relation_name",)
 
     def get_relation_name(self, obj):
-        return obj.get_relative_display()
+        return obj.get_relation_display()
