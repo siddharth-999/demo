@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import ugettext_lazy as _
 
-from .models import User
+from .models import User, Family, FamilyRelation
 
 
 class UserAdmin(BaseUserAdmin):
@@ -31,4 +31,14 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ('first_name', 'last_name', 'email')
 
 
+class FamilyAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+
+
+class FamilyRelationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'member', 'relation', 'relative',)
+
+
 admin.site.register(User, UserAdmin)
+admin.site.register(Family, FamilyAdmin)
+admin.site.register(FamilyRelation, FamilyRelationAdmin)
