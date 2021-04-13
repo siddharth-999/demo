@@ -13,7 +13,8 @@ from .permissions import UserPermission, LoginSignupPermission, \
     FamilyRelativePermission
 from .serializers import UserUpdateSerializer, \
     UserDetailSerializer, LoginAuthSerializer, \
-    FamilyRelativeDetailSerializer
+    FamilyRelativeDetailSerializer, \
+    FamilyRelativeUpdateSerializer, FamilyRelativeCreateSerializer
 
 
 class LoginAPIView(ObtainAuthToken, GenericAPIView):
@@ -78,7 +79,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class FamilyRelativeViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated, FamilyRelativePermission,)
-    http_method_names = ["get", "patch", "delete"]
+    http_method_names = ["get", "patch", "delete", "post"]
     filter_backends = (filters.DjangoFilterBackend,)
     filterset_fields = ('relation',)
 
@@ -87,4 +88,8 @@ class FamilyRelativeViewSet(viewsets.ModelViewSet):
         return FamilyRelation.objects.filter(added_by=user)
 
     def get_serializer_class(self):
+        if self.action == "create":
+            return FamilyRelativeCreateSerializer
+        elif self.action == "partial_update":
+            return FamilyRelativeUpdateSerializer
         return FamilyRelativeDetailSerializer
