@@ -36,7 +36,7 @@ class FamilyAdmin(admin.ModelAdmin):
 
 
 class FamilyRelationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'member', 'relation', 'relative',)
+    list_display = ('id', 'added_by', 'relation', 'relative',)
 
 
 admin.site.register(User, UserAdmin)

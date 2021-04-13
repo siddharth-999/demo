@@ -58,8 +58,8 @@ class User(AbstractUser, BaseModel):
 
 
 class FamilyRelation(BaseModel):
-    member = models.ForeignKey(User, on_delete=models.SET_NULL,
-                               null=True, blank=True)
+    added_by = models.ForeignKey(User, on_delete=models.SET_NULL,
+                                 null=True, blank=True)
     relation = models.IntegerField(null=True, blank=True,
                                    choices=RELATION_CHOICE)
     relative = models.ForeignKey(User, on_delete=models.SET_NULL,
