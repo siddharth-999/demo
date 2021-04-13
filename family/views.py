@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login
+from django_filters import rest_framework as filters
 from rest_framework import status, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
@@ -78,6 +79,8 @@ class FamilyRelativeViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated, FamilyRelativePermission,)
     http_method_names = ["get", "patch", "delete"]
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_fields = ('relation',)
 
     def get_queryset(self):
         user = self.request.user
