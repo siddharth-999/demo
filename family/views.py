@@ -4,11 +4,12 @@ from rest_framework import status, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.decorators import action
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
-from .models import User, FamilyRelation
+from .models import User, FamilyRelation, RELATION_CHOICE
 from .permissions import UserPermission, LoginSignupPermission, \
     FamilyRelativePermission
 from .serializers import UserUpdateSerializer, \
@@ -93,3 +94,20 @@ class FamilyRelativeViewSet(viewsets.ModelViewSet):
         elif self.action == "partial_update":
             return FamilyRelativeUpdateSerializer
         return FamilyRelativeDetailSerializer
+
+    def list(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def relations(self, request):
+        data = []
+        for relation in RELATION_CHOICE:
+            data.append(
+                {
+                    'id': relation[0],
+                    'relation': relation[1]
+                }
+            )
+        return Response(data, status=status.HTTP_200_OK)
