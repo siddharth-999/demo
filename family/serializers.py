@@ -84,6 +84,8 @@ class FamilyRelativeCreateSerializer(serializers.ModelSerializer):
         user = self.context['request'].user
         if not attrs.get('relative'):
             raise ValidationError({"detail": "please enter relative"})
+        if attrs.get('relative').family != user.family:
+            raise ValidationError({"detail": "relative must be from same family."})
         if FamilyRelation.objects.filter(relative=attrs.get('relative'),
                                          added_by=user).exists():
             raise ValidationError({"detail": "relative is already exists"})
@@ -100,17 +102,4 @@ class FamilyRelativeUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FamilyRelation
-        fields = ("relative", "relation",)
-
-    def validate(self, attrs):
-        user = self.context['request'].user
-        if attrs.get('relative') is None:
-            raise ValidationError({"detail": "please enter relative"})
-        if attrs.get('relative'):
-            if attrs.get('relative') == user:
-                raise ValidationError({"detail": "please enter valid relative"})
-            if attrs.get('relative') != self.instance.relative:
-                if FamilyRelation.objects.filter(relative=attrs.get('relative'),
-                                                 added_by=user).exists():
-                    raise ValidationError({"detail": "relative is already exists"})
-        return attrs
+        fields = ("relation",)
