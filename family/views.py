@@ -95,6 +95,11 @@ class FamilyRelativeViewSet(viewsets.ModelViewSet):
             return FamilyRelativeUpdateSerializer
         return FamilyRelativeDetailSerializer
 
+    def list(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     @action(detail=False, methods=['get'])
     def relations(self, request):
         data = []
