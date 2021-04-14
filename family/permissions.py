@@ -28,7 +28,7 @@ class FamilyRelativePermission(BasePermission):
         if request.user.is_authenticated:
             if view.action in ["list", "destroy",
                                "partial_update",
-                               "create"]:
+                               "create", "relations"]:
                 return True
             else:
                 return False
