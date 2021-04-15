@@ -95,7 +95,7 @@ class FamilyRelativeViewSet(viewsets.ModelViewSet):
     queryset = FamilyRelation.objects.all()
     http_method_names = ["get", "patch", "delete", "post"]
     filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('relation', 'relative')
+    filterset_fields = ('relation', 'relative', 'added_by',)
 
     def get_serializer_class(self):
         if self.action == "create":
