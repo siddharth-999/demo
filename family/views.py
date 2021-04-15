@@ -29,7 +29,7 @@ class LoginAPIView(ObtainAuthToken, GenericAPIView):
             try:
                 user_check = User.objects.get(
                     email__iexact=serializer.validated_data['username'].lower().strip(),
-                    is_delete=False, is_active=True)
+                    is_delete=False, is_active=True, is_superuser=False)
             except User.DoesNotExist:
                 response = \
                     {
