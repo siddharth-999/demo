@@ -45,7 +45,8 @@ class User(AbstractUser, BaseModel):
                                     default=False)
     date_of_birth = models.DateField(null=True, blank=True)
     email = models.EmailField(unique=True, null=True, blank=True)
-    phone_number = models.BigIntegerField(null=True, blank=True)
+    phone_number = models.CharField(null=True, blank=True,
+                                    max_length=10)
     address = models.TextField(null=True, blank=True)
     family = models.ForeignKey(Family, on_delete=models.SET_NULL,
                                null=True, blank=True)

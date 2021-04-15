@@ -1,3 +1,4 @@
+from django.core.validators import RegexValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
@@ -23,7 +24,11 @@ class UserUpdateSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=100, allow_null=False,
                                    allow_blank=False)
     date_of_birth = serializers.DateField(allow_null=False)
-    phone_number = serializers.IntegerField(allow_null=False)
+    phone_number = serializers.CharField(allow_null=False,
+                                         allow_blank=False,
+                                         max_length=10,
+                                         min_length=10,
+                                         validators=[RegexValidator(r'^\d{1,10}$')])
 
     class Meta:
         model = User
