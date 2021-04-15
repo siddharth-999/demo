@@ -11,11 +11,12 @@ from rest_framework.response import Response
 
 from .models import User, FamilyRelation, RELATION_CHOICE
 from .permissions import UserPermission, LoginSignupPermission, \
-    FamilyRelativePermission
-from .serializers import UserUpdateSerializer, \
-    UserDetailSerializer, LoginAuthSerializer, \
-    FamilyRelativeDetailSerializer, \
-    FamilyRelativeUpdateSerializer, FamilyRelativeCreateSerializer
+    FamilyRelativePermission, FamilyMemberPermission
+from .serializers import (UserUpdateSerializer,
+    UserDetailSerializer, LoginAuthSerializer,
+    FamilyRelativeDetailSerializer,
+    FamilyRelativeUpdateSerializer, 
+    FamilyRelativeCreateSerializer, UserListSerializer)
 
 
 class LoginAPIView(ObtainAuthToken, GenericAPIView):
@@ -76,17 +77,25 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.save()
         return Response(serializer.data)
 
+class FamilyMemberViewSet(viewsets.ModelViewSet):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, FamilyMemberPermission,)
+    queryset = User.objects.exclude(is_superuser=True).order_by('id')
+    http_method_names = ["get"]
+    serializer_class = UserListSerializer
+
+    def list(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 class FamilyRelativeViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated, FamilyRelativePermission,)
+    queryset = FamilyRelation.objects.all()
     http_method_names = ["get", "patch", "delete", "post"]
     filter_backends = (filters.DjangoFilterBackend,)
-    filterset_fields = ('relation',)
-
-    def get_queryset(self):
-        user = self.request.user
-        return FamilyRelation.objects.filter(added_by=user)
+    filterset_fields = ('relation', 'relative', 'added_by',)
 
     def get_serializer_class(self):
         if self.action == "create":

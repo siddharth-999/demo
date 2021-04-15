@@ -108,3 +108,8 @@ class FamilyRelativeUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = FamilyRelation
         fields = ("relation",)
+
+class UserListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "first_name", "last_name",)

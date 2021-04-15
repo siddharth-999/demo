@@ -33,3 +33,12 @@ class FamilyRelativePermission(BasePermission):
             else:
                 return False
         return False
+
+class FamilyMemberPermission(BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_authenticated:
+            if view.action == "list":
+                return True
+            else:
+                return False
+        return False
