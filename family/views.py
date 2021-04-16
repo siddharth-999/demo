@@ -8,6 +8,7 @@ from rest_framework.decorators import action
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
 
 from .models import User, FamilyRelation, RELATION_CHOICE
 from .permissions import UserPermission, LoginSignupPermission, \
@@ -120,3 +121,12 @@ class FamilyRelativeViewSet(viewsets.ModelViewSet):
                 }
             )
         return Response(data, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance.added_by != request.user:
+            raise PermissionDenied
+        else:
+            instance.delete()
+        return Response({"detail":"Deleted successfully."},
+        status=status.HTTP_204_NO_CONTENT)
