@@ -1,6 +1,6 @@
 from django.core.validators import RegexValidator
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, PermissionDenied
 
 from .models import User, FamilyRelation, RELATION_CHOICE
 
@@ -71,7 +71,7 @@ class FamilyRelativeDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FamilyRelation
-        fields = ("id", "relative", "relation", "relation_name",)
+        fields = ("id", "relative", "relation", "relation_name", "added_by",)
 
     def get_relation_name(self, obj):
         return obj.get_relation_display()
@@ -108,6 +108,12 @@ class FamilyRelativeUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = FamilyRelation
         fields = ("relation",)
+    
+    def validate(self, attrs):
+        if self.instance.added_by != self.context['request'].user:
+            raise PermissionDenied
+        return attrs
+
 
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
