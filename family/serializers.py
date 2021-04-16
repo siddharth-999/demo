@@ -71,7 +71,7 @@ class FamilyRelativeDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FamilyRelation
-        fields = ("id", "relative", "relation", "relation_name",)
+        fields = ("id", "relative", "relation", "relation_name", "added_by",)
 
     def get_relation_name(self, obj):
         return obj.get_relation_display()
